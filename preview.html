@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wedding builder — theme preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Lato:wght@300;400;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Karla:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   THEME TOKENS
+   Every site component styles itself from these variables only.
+   Three themes = three token sets + a few structural overrides.
+   The couple's primary/background choices override the theme's.
+   ───────────────────────────────────────────────────────────── */
+
+[data-theme="classic"]{
+  --bg:#FBF9F5; --ink:#1F1B16; --muted:#6B6157; --primary:#8A6D3B;
+  --surface:#FFFFFF; --line:rgba(31,27,22,.16);
+  --display:'Cormorant Garamond',Georgia,serif;
+  --body:'Lato',system-ui,sans-serif;
+  --radius:0px; --track:.3em; --shadow:none;
+  --display-weight:300; --display-style:normal;
+}
+[data-theme="minimal"]{
+  --bg:#FCFCFA; --ink:#111111; --muted:#7C7C76; --primary:#111111;
+  --surface:#FFFFFF; --line:rgba(17,17,17,.13);
+  --display:'Inter',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --radius:0px; --track:.2em; --shadow:none;
+  --display-weight:500; --display-style:normal;
+}
+[data-theme="garden"]{
+  --bg:#F6F2EC; --ink:#2E3328; --muted:#6E7566; --primary:#6B7F5E;
+  --surface:#FFFDFA; --line:rgba(46,51,40,.13);
+  --display:'Playfair Display',Georgia,serif;
+  --body:'Karla',system-ui,sans-serif;
+  --radius:18px; --track:.14em; --shadow:0 18px 44px -30px rgba(46,51,40,.5);
+  --display-weight:400; --display-style:italic;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#E8E6E1;font-family:'Inter',system-ui,sans-serif}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ── the wedding site ───────────────────────────────────────── */
+.site{background:var(--bg);color:var(--ink);font-family:var(--body);font-weight:400;line-height:1.65;padding-bottom:1px}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+.site h1,.site h2,.site h3{font-family:var(--display);font-weight:var(--display-weight);font-style:var(--display-style);margin:0;line-height:1.1}
+
+.label{font-family:var(--body);font-size:.68rem;letter-spacing:var(--track);text-transform:uppercase;color:var(--primary);font-weight:700}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;padding:15px 24px}
+.nav a{color:var(--muted);text-decoration:none;font-size:.72rem;letter-spacing:var(--track);text-transform:uppercase}
+.nav a:hover,.nav a:focus-visible{color:var(--primary)}
+
+/* hero */
+.hero{padding:84px 0 72px;text-align:center}
+.hero .names{font-size:clamp(3rem,10vw,6.6rem);letter-spacing:-.01em;margin:22px 0 0}
+.hero .amp{color:var(--primary);font-style:italic}
+.hero-date{margin-top:18px;color:var(--muted);font-size:.95rem}
+.hero-img{margin-top:46px;aspect-ratio:16/9;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 34%,var(--bg)),color-mix(in srgb,var(--primary) 8%,var(--bg)))}
+.ph{position:relative;background:linear-gradient(150deg,color-mix(in srgb,var(--primary) 28%,var(--bg)),color-mix(in srgb,var(--primary) 6%,var(--bg)))}
+.ph::after{content:"";position:absolute;inset:0;opacity:.35;
+  background-image:radial-gradient(circle at 30% 25%,color-mix(in srgb,var(--primary) 40%,transparent) 0,transparent 45%),
+                   radial-gradient(circle at 75% 70%,color-mix(in srgb,var(--ink) 18%,transparent) 0,transparent 40%)}
+
+/* countdown */
+.count{display:flex;justify-content:center;gap:34px;margin-top:34px}
+.count div{text-align:center}
+.count b{display:block;font-family:var(--display);font-weight:var(--display-weight);font-size:2.1rem;line-height:1;color:var(--primary);font-variant-numeric:tabular-nums}
+.count span{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+
+/* sections */
+.sec{padding:76px 0;border-top:1px solid var(--line)}
+.sec-head{text-align:center;margin-bottom:44px}
+.sec-head h2{font-size:clamp(1.8rem,4.4vw,2.7rem);margin-top:12px}
+.lede{max-width:56ch;margin:0 auto;text-align:center;color:var(--muted)}
+
+/* events */
+.events{display:grid;gap:22px}
+.event{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 30px;
+  display:grid;grid-template-columns:132px 1fr;gap:28px;align-items:start}
+.event-when{border-right:1px solid var(--line);padding-right:20px}
+.event-when .d{font-family:var(--display);font-weight:var(--display-weight);font-size:2.3rem;line-height:1;color:var(--primary)}
+.event-when .m{font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.event-when .t{font-size:.85rem;color:var(--muted);margin-top:12px;font-variant-numeric:tabular-nums}
+.event h3{font-size:1.5rem}
+.event p{margin:10px 0 0;color:var(--muted);font-size:.95rem}
+.event .where{margin-top:6px;font-size:.9rem;color:var(--ink);opacity:.85}
+.dress{display:inline-block;margin-top:14px;font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;
+  border:1px solid var(--primary);color:var(--primary);padding:5px 11px;border-radius:999px}
+
+/* venue */
+.venue{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:38px;display:grid;grid-template-columns:1fr 1fr;gap:38px;align-items:center}
+.venue-img{aspect-ratio:4/3;border-radius:var(--radius);overflow:hidden}
+.venue h3{font-size:1.7rem}
+.venue address{font-style:normal;color:var(--muted);margin-top:12px;line-height:1.8}
+.venue .note{margin-top:18px;font-size:.9rem;color:var(--muted);border-left:2px solid var(--primary);padding-left:14px}
+.link{display:inline-block;margin-top:22px;color:var(--primary);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+  text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px}
+
+/* menu */
+.menu-cat{margin-bottom:48px;text-align:center}
+.menu-cat:last-child{margin-bottom:0}
+.menu-items{display:grid;gap:22px;margin-top:24px;max-width:600px;margin-inline:auto}
+.menu-item .n{font-family:var(--display);font-weight:var(--display-weight);font-style:var(--display-style);font-size:1.3rem}
+.menu-item .d{color:var(--muted);font-size:.9rem;font-style:italic;margin-top:2px}
+
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.gal .ph{aspect-ratio:1;border-radius:var(--radius);overflow:hidden}
+.gal .ph:nth-child(3n+2){aspect-ratio:1;filter:hue-rotate(14deg)}
+.gal .ph:nth-child(3n){filter:hue-rotate(-12deg) saturate(.9)}
+
+/* faq */
+.faqs{max-width:680px;margin:0 auto;border-top:1px solid var(--line)}
+.faq{border-bottom:1px solid var(--line);padding:22px 0}
+.faq h3{font-size:1.15rem}
+.faq p{margin:9px 0 0;color:var(--muted);font-size:.94rem}
+
+/* rsvp */
+.rsvp{max-width:560px;margin:0 auto}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.field input,.field textarea,.field select{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.field input:focus,.field textarea:focus,.field select:focus{outline:2px solid var(--primary);outline-offset:1px;border-color:transparent}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.choice{display:flex;gap:10px}
+.choice button{flex:1;font:inherit;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  padding:12px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:var(--radius)}
+.choice button[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:var(--bg)}
+.submit{width:100%;font:inherit;font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;
+  padding:16px;margin-top:8px;border:0;border-radius:var(--radius);background:var(--primary);color:var(--bg)}
+.submit:hover{filter:brightness(1.12)}
+.foot{padding:56px 0 72px;text-align:center;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line)}
+
+/* ── SIGNATURE: Classic — the engraved rule that breaks for its label
+      (lifted from letterpress invitation stationery) ───────────── */
+[data-theme="classic"] .sec-head .label{position:relative;display:inline-block;padding:0 20px}
+[data-theme="classic"] .sec-head .label::before,
+[data-theme="classic"] .sec-head .label::after{content:"";position:absolute;top:50%;width:56px;height:1px;background:var(--line)}
+[data-theme="classic"] .sec-head .label::before{right:100%}
+[data-theme="classic"] .sec-head .label::after{left:100%}
+[data-theme="classic"] .hero .names{font-style:italic}
+
+/* ── SIGNATURE: Minimal — left-aligned rail, date as tabular numerals ── */
+[data-theme="minimal"] .hero,[data-theme="minimal"] .sec-head,[data-theme="minimal"] .lede,
+[data-theme="minimal"] .menu-cat{text-align:left}
+[data-theme="minimal"] .lede{margin-inline:0}
+[data-theme="minimal"] .menu-items{margin-inline:0}
+[data-theme="minimal"] .hero .names{font-weight:600;letter-spacing:-.03em;text-transform:uppercase;font-size:clamp(2.4rem,9vw,5.4rem)}
+[data-theme="minimal"] .hero .amp{font-style:normal;font-weight:300}
+[data-theme="minimal"] .hero-date{font-size:clamp(2.2rem,7vw,4rem);font-variant-numeric:tabular-nums;letter-spacing:.02em;
+  color:var(--ink);opacity:.16;margin-top:6px;font-weight:600}
+[data-theme="minimal"] .count{justify-content:flex-start;gap:44px}
+[data-theme="minimal"] .count b{font-weight:600;font-size:1.7rem}
+[data-theme="minimal"] .sec-head h2{text-transform:uppercase;letter-spacing:-.01em;font-size:clamp(1.4rem,3.4vw,2rem)}
+[data-theme="minimal"] .nav-in{justify-content:flex-start}
+[data-theme="minimal"] .event{grid-template-columns:96px 1fr}
+[data-theme="minimal"] .event-when .d{font-weight:600;font-size:1.9rem}
+[data-theme="minimal"] .gal{grid-template-columns:repeat(4,1fr);gap:8px}
+
+/* ── SIGNATURE: Garden — arch-topped hero, soft cards ───────────── */
+[data-theme="garden"] .hero-img{border-radius:1000px 1000px 22px 22px;aspect-ratio:5/4;max-width:620px;margin-inline:auto}
+[data-theme="garden"] .sec-head h2{font-style:italic}
+[data-theme="garden"] .venue-img{border-radius:1000px 1000px 18px 18px;aspect-ratio:3/4}
+[data-theme="garden"] .gal .ph:first-child{border-radius:1000px 1000px 18px 18px}
+
+@media (max-width:720px){
+  .event{grid-template-columns:1fr;gap:16px}
+  .event-when{border-right:0;border-bottom:1px solid var(--line);padding:0 0 14px;display:flex;align-items:baseline;gap:12px}
+  .event-when .m,.event-when .t{margin-top:0}
+  .venue{grid-template-columns:1fr;padding:26px}
+  .row{grid-template-columns:1fr}
+  .gal,[data-theme="minimal"] .gal{grid-template-columns:repeat(2,1fr)}
+  .sec{padding:56px 0}
+}
+
+/* ── preview chrome (not part of the product) ───────────────────── */
+.bar{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:18px;display:flex;align-items:center;gap:6px;
+  background:#171614;color:#EFEDE8;padding:8px;border-radius:14px;box-shadow:0 20px 50px -18px rgba(0,0,0,.6);font-size:.76rem;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 24px)}
+.bar button{font:inherit;cursor:pointer;border:0;background:transparent;color:#9C9890;padding:8px 13px;border-radius:9px}
+.bar button[aria-pressed="true"]{background:#332F2A;color:#fff}
+.bar .sep{width:1px;height:22px;background:#332F2A;margin:0 5px}
+.bar label{display:flex;align-items:center;gap:7px;color:#9C9890;padding-left:4px}
+.bar input[type=color]{width:26px;height:26px;padding:0;border:1px solid #454039;border-radius:6px;background:none;cursor:pointer}
+.viewtoggle{position:fixed;z-index:60;top:14px;right:14px;display:flex;background:#17161ADD;backdrop-filter:blur(8px);border-radius:11px;padding:5px}
+.viewtoggle button{font:inherit;font-size:.74rem;cursor:pointer;border:0;background:transparent;color:#A29E96;padding:7px 13px;border-radius:8px}
+.viewtoggle button[aria-pressed="true"]{background:#3A352F;color:#fff}
+[hidden]{display:none!important}
+
+/* ── editor mockup ──────────────────────────────────────────────── */
+.ed{min-height:100vh;background:#F4F3F0;color:#1B1A18;font-size:14px}
+.ed-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 22px;background:#fff;border-bottom:1px solid #E3E1DC;position:sticky;top:0;z-index:5}
+.ed-top .who{font-weight:600}
+.ed-top .url{color:#7A766E;font-size:.8rem;margin-left:10px}
+.ed-actions{display:flex;gap:8px;align-items:center}
+.btn{font:inherit;font-size:.8rem;cursor:pointer;border:1px solid #DCD9D3;background:#fff;color:#33302B;padding:8px 14px;border-radius:8px}
+.btn.primary{background:#1B1A18;border-color:#1B1A18;color:#fff}
+.pill{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;background:#E8F0E4;color:#3F6A34;padding:5px 10px;border-radius:999px}
+.ed-body{display:grid;grid-template-columns:214px 1fr;gap:22px;max-width:1120px;margin:0 auto;padding:22px}
+.ed-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:76px;align-self:start}
+.ed-nav button{font:inherit;text-align:left;cursor:pointer;border:0;background:transparent;color:#5D5952;padding:9px 12px;border-radius:8px;display:flex;justify-content:space-between}
+.ed-nav button[aria-pressed="true"]{background:#fff;color:#1B1A18;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.ed-nav .n{color:#A5A199;font-size:.78rem}
+.card{background:#fff;border:1px solid #E3E1DC;border-radius:12px;padding:22px;margin-bottom:16px}
+.card h3{margin:0 0 4px;font-size:.95rem}
+.card .hint{margin:0 0 18px;color:#7A766E;font-size:.8rem}
+.ed .field label{color:#5D5952;letter-spacing:.06em}
+.ed .field input,.ed .field textarea{border:1px solid #DCD9D3;border-radius:8px;background:#fff;color:#1B1A18}
+.toggles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.tg{display:flex;align-items:center;gap:10px;border:1px solid #E3E1DC;border-radius:9px;padding:10px 12px;cursor:pointer}
+.tg .sw{width:32px;height:18px;border-radius:999px;background:#D9D6D0;position:relative;flex:none;transition:background .15s}
+.tg .sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s}
+.tg[aria-pressed="true"] .sw{background:#3F6A34}
+.tg[aria-pressed="true"] .sw::after{transform:translateX(14px)}
+.item{border:1px solid #E3E1DC;border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;gap:14px;align-items:center}
+.item .t{font-weight:600}
+.item .s{color:#7A766E;font-size:.8rem;margin-top:3px}
+.ghost{border:1px dashed #CFCBC4;color:#5D5952;background:#FAFAF8;width:100%;text-align:center;padding:12px;border-radius:10px;cursor:pointer;font:inherit;font-size:.83rem}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.tcard{border:1px solid #E3E1DC;border-radius:10px;padding:14px;width:150px;cursor:pointer;text-align:left;background:#fff;font:inherit}
+.tcard[aria-pressed="true"]{border-color:#1B1A18;box-shadow:0 0 0 1px #1B1A18}
+.tcard .bar2{height:44px;border-radius:6px;margin-bottom:10px}
+.tcard .nm{font-size:.83rem;font-weight:600}
+.tcard .ds{font-size:.72rem;color:#7A766E;margin-top:2px}
+@media (max-width:800px){.ed-body{grid-template-columns:1fr}.ed-nav{position:static;flex-direction:row;overflow:auto}}
+</style>
+</head>
+<body>
+
+<div class="viewtoggle" role="group" aria-label="Preview view">
+  <button id="v-site" aria-pressed="true">Guest site</button>
+  <button id="v-ed" aria-pressed="false">Couple editor</button>
+</div>
+
+<!-- ══════════════ PUBLIC WEDDING SITE ══════════════ -->
+<main class="site" id="site" data-theme="classic">
+
+  <nav class="nav"><div class="nav-in">
+    <a href="#details">Details</a><a href="#events">Events</a><a href="#venue">Venue</a>
+    <a href="#menu">Menu</a><a href="#gallery">Gallery</a><a href="#faq">FAQs</a><a href="#rsvp">RSVP</a>
+  </div></nav>
+
+  <header class="hero"><div class="wrap">
+    <p class="label">We're getting married</p>
+    <h1 class="names">Laiba <span class="amp">&amp;</span> Aamir</h1>
+    <p class="hero-date" id="heroDate">Saturday, 15 May 2027 &middot; London</p>
+    <div class="count" id="countdown" aria-label="Countdown to the wedding">
+      <div><b>—</b><span>Days</span></div><div><b>—</b><span>Hours</span></div>
+      <div><b>—</b><span>Minutes</span></div><div><b>—</b><span>Seconds</span></div>
+    </div>
+    <div class="hero-img ph"></div>
+  </div></header>
+
+  <section class="sec" id="details"><div class="wrap">
+    <div class="sec-head"><span class="label">Welcome</span><h2>Three days, one very long guest list</h2></div>
+    <p class="lede">We've been putting this off for years and finally ran out of excuses. There are three celebrations spread across the week — come to all of them, or whichever one you can make. Everything you need to know is on this page, and the RSVP is at the bottom.</p>
+  </div></section>
+
+  <section class="sec" id="events"><div class="wrap">
+    <div class="sec-head"><span class="label">The celebrations</span><h2>Events</h2></div>
+    <div class="events">
+      <article class="event">
+        <div class="event-when"><div class="d">13</div><div class="m">Thu May</div><div class="t">18:00 – 23:00</div></div>
+        <div><h3>Mehndi</h3>
+          <p class="where">The Orangery &middot; 12 Warwick Road, Ealing W5 3XH</p>
+          <p>Henna, dhol and a dance floor that opens early. Eat before you come, then eat again when you get here.</p>
+          <span class="dress">Bright colours</span></div>
+      </article>
+      <article class="event">
+        <div class="event-when"><div class="d">14</div><div class="m">Fri May</div><div class="t">13:00 – 16:00</div></div>
+        <div><h3>Nikah</h3>
+          <p class="where">London Central Mosque &middot; 146 Park Road NW8 7RG</p>
+          <p>The ceremony itself, followed by lunch. Please arrive by 12:45 — the doors close when we begin.</p>
+          <span class="dress">Modest formal</span></div>
+      </article>
+      <article class="event">
+        <div class="event-when"><div class="d">15</div><div class="m">Sat May</div><div class="t">18:30 – late</div></div>
+        <div><h3>Walima</h3>
+          <p class="where">Kew Gardens Pavilion &middot; Richmond TW9 3AE</p>
+          <p>Dinner, speeches short enough to survive, and dancing until the venue turns the lights on.</p>
+          <span class="dress">Black tie</span></div>
+      </article>
+    </div>
+  </div></section>
+
+  <section class="sec" id="venue"><div class="wrap">
+    <div class="sec-head"><span class="label">Getting there</span><h2>Venue</h2></div>
+    <div class="venue">
+      <div class="venue-img ph"></div>
+      <div>
+        <h3>Kew Gardens Pavilion</h3>
+        <address>Royal Botanic Gardens<br>Kew, Richmond<br>TW9 3AE</address>
+        <p class="note">Parking on Ferry Lane is free after 6pm. Kew Bridge station is a ten-minute walk and the last train back into town leaves at 00:24.</p>
+        <a class="link" href="#">Open in Google Maps</a>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="sec" id="menu"><div class="wrap">
+    <div class="sec-head"><span class="label">Walima dinner</span><h2>Menu</h2></div>
+    <div class="menu-cat"><span class="label">Canapés</span>
+      <div class="menu-items">
+        <div class="menu-item"><div class="n">Mini lamb kofta</div><div class="d">Mint yoghurt</div></div>
+        <div class="menu-item"><div class="n">Vegetable samosa</div><div class="d">Tamarind chutney</div></div>
+      </div></div>
+    <div class="menu-cat"><span class="label">Starter</span>
+      <div class="menu-items">
+        <div class="menu-item"><div class="n">Burrata</div><div class="d">Heritage tomatoes and basil</div></div>
+      </div></div>
+    <div class="menu-cat"><span class="label">Main course</span>
+      <div class="menu-items">
+        <div class="menu-item"><div class="n">Tandoori chicken</div><div class="d">Pilau rice and charred vegetables</div></div>
+        <div class="menu-item"><div class="n">Paneer makhani</div><div class="d">Saffron rice and buttered greens</div></div>
+      </div></div>
+    <div class="menu-cat"><span class="label">Dessert</span>
+      <div class="menu-items">
+        <div class="menu-item"><div class="n">Raspberry cheesecake</div><div class="d">Raspberry coulis</div></div>
+      </div></div>
+  </div></section>
+
+  <section class="sec" id="gallery"><div class="wrap">
+    <div class="sec-head"><span class="label">Us, mostly</span><h2>Gallery</h2></div>
+    <div class="gal">
+      <div class="ph"></div><div class="ph"></div><div class="ph"></div>
+      <div class="ph"></div><div class="ph"></div><div class="ph"></div>
+    </div>
+  </div></section>
+
+  <section class="sec" id="faq"><div class="wrap">
+    <div class="sec-head"><span class="label">Before you ask</span><h2>Questions</h2></div>
+    <div class="faqs">
+      <div class="faq"><h3>What should I wear?</h3><p>Each event has its own dress code listed above. If you're only coming to one, dress for that one.</p></div>
+      <div class="faq"><h3>Is there parking?</h3><p>Yes at all three venues. Ferry Lane at Kew is free after 6pm; the Ealing car park charges until 8pm.</p></div>
+      <div class="faq"><h3>Can I bring my children?</h3><p>Children are very welcome at the Mehndi and the Nikah. The Walima is adults only after 9pm.</p></div>
+      <div class="faq"><h3>When do you need my RSVP?</h3><p>By 1 March 2027, so we can give the caterers a number they can work with.</p></div>
+    </div>
+  </div></section>
+
+  <section class="sec" id="rsvp"><div class="wrap">
+    <div class="sec-head"><span class="label">Let us know</span><h2>RSVP</h2></div>
+    <form class="rsvp" onsubmit="return false">
+      <div class="field"><label for="gn">Your name</label><input id="gn" placeholder="Sana Iqbal"></div>
+      <div class="field"><label for="ge">Email <span style="text-transform:none;letter-spacing:0">(optional)</span></label><input id="ge" type="email" placeholder="sana@example.com"></div>
+      <div class="field"><label>Will you be there?</label>
+        <div class="choice"><button type="button" aria-pressed="true">Joyfully accepts</button><button type="button" aria-pressed="false">Regretfully declines</button></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="np">How many of you</label><input id="np" type="number" value="2" min="1" max="20"></div>
+        <div class="field"><label for="dr">Dietary requirements</label><input id="dr" placeholder="No nuts"></div>
+      </div>
+      <div class="field"><label for="ms">Anything else</label><textarea id="ms" rows="3" placeholder="A note for the two of us"></textarea></div>
+      <button class="submit" type="button">Send our reply</button>
+    </form>
+  </div></section>
+
+  <footer class="foot"><div class="wrap">Laiba &amp; Aamir &middot; 15 May 2027</div></footer>
+</main>
+
+<!-- ══════════════ COUPLE EDITOR ══════════════ -->
+<div class="ed" id="editor" hidden>
+  <div class="ed-top">
+    <div><span class="who">Laiba &amp; Aamir</span><span class="url">claude-wedding.vercel.app/w/laiba-and-aamir</span></div>
+    <div class="ed-actions"><span class="pill">Published</span>
+      <button class="btn">View site</button><button class="btn primary">Save changes</button></div>
+  </div>
+  <div class="ed-body">
+    <nav class="ed-nav">
+      <button aria-pressed="false">Basics</button>
+      <button aria-pressed="false">Sections</button>
+      <button aria-pressed="true">Events <span class="n">3</span></button>
+      <button aria-pressed="false">Menu <span class="n">6</span></button>
+      <button aria-pressed="false">Gallery <span class="n">6/10</span></button>
+      <button aria-pressed="false">FAQs <span class="n">4</span></button>
+      <button aria-pressed="false">Theme</button>
+      <button aria-pressed="false">RSVPs <span class="n">48</span></button>
+    </nav>
+    <div>
+      <div class="card">
+        <h3>Events</h3><p class="hint">Add every celebration. They appear on the site in date order, so you don't have to sort them.</p>
+        <div class="item"><div><div class="t">Mehndi</div><div class="s">Thu 13 May 2027 · 18:00–23:00 · The Orangery, Ealing</div></div>
+          <div><button class="btn">Edit</button> <button class="btn">Delete</button></div></div>
+        <div class="item"><div><div class="t">Nikah</div><div class="s">Fri 14 May 2027 · 13:00–16:00 · London Central Mosque</div></div>
+          <div><button class="btn">Edit</button> <button class="btn">Delete</button></div></div>
+        <div class="item"><div><div class="t">Walima</div><div class="s">Sat 15 May 2027 · 18:30 · Kew Gardens Pavilion</div></div>
+          <div><button class="btn">Edit</button> <button class="btn">Delete</button></div></div>
+        <button class="ghost">Add an event</button>
+      </div>
+      <div class="card">
+        <h3>Sections</h3><p class="hint">Turn off anything you don't need. Hidden sections keep their content — nothing is deleted.</p>
+        <div class="toggles">
+          <button class="tg" aria-pressed="true"><span class="sw"></span>Home</button>
+          <button class="tg" aria-pressed="true"><span class="sw"></span>Wedding details</button>
+          <button class="tg" aria-pressed="true"><span class="sw"></span>Events</button>
+          <button class="tg" aria-pressed="true"><span class="sw"></span>Venue</button>
+          <button class="tg" aria-pressed="true"><span class="sw"></span>Menu</button>
+          <button class="tg" aria-pressed="true"><span class="sw"></span>Gallery</button>
+          <button class="tg" aria-pressed="true"><span class="sw"></span>FAQs</button>
+          <button class="tg" aria-pressed="true"><span class="sw"></span>RSVP</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Theme</h3><p class="hint">Pick a look, then adjust the two colours if you want something closer to your stationery.</p>
+        <div class="swatches">
+          <button class="tcard" aria-pressed="true"><div class="bar2" style="background:linear-gradient(120deg,#8A6D3B,#FBF9F5)"></div><div class="nm">Classic elegant</div><div class="ds">Engraved, centred, serif</div></button>
+          <button class="tcard" aria-pressed="false"><div class="bar2" style="background:linear-gradient(120deg,#111,#FCFCFA)"></div><div class="nm">Modern minimal</div><div class="ds">Left-aligned, no ornament</div></button>
+          <button class="tcard" aria-pressed="false"><div class="bar2" style="background:linear-gradient(120deg,#6B7F5E,#F6F2EC)"></div><div class="nm">Romantic garden</div><div class="ds">Arched, soft, italic</div></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bar" role="group" aria-label="Theme controls">
+  <button data-theme-btn="classic" aria-pressed="true">Classic elegant</button>
+  <button data-theme-btn="minimal" aria-pressed="false">Modern minimal</button>
+  <button data-theme-btn="garden" aria-pressed="false">Romantic garden</button>
+  <span class="sep"></span>
+  <label>Primary <input type="color" id="cPrimary" value="#8a6d3b"></label>
+  <label>Background <input type="color" id="cBg" value="#fbf9f5"></label>
+  <button id="reset">Reset</button>
+</div>
+
+<script>
+const site = document.getElementById('site');
+const defaults = {
+  classic:{primary:'#8a6d3b',bg:'#fbf9f5'},
+  minimal:{primary:'#111111',bg:'#fcfcfa'},
+  garden:{primary:'#6b7f5e',bg:'#f6f2ec'}
+};
+let theme = 'classic';
+
+function applyTheme(name){
+  theme = name;
+  site.dataset.theme = name;
+  site.style.removeProperty('--primary');
+  site.style.removeProperty('--bg');
+  document.getElementById('cPrimary').value = defaults[name].primary;
+  document.getElementById('cBg').value = defaults[name].bg;
+  document.querySelectorAll('[data-theme-btn]').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.themeBtn === name)));
+}
+document.querySelectorAll('[data-theme-btn]').forEach(b =>
+  b.addEventListener('click', () => applyTheme(b.dataset.themeBtn)));
+document.getElementById('cPrimary').addEventListener('input', e => site.style.setProperty('--primary', e.target.value));
+document.getElementById('cBg').addEventListener('input', e => site.style.setProperty('--bg', e.target.value));
+document.getElementById('reset').addEventListener('click', () => applyTheme(theme));
+
+/* view toggle */
+const vs = document.getElementById('v-site'), ve = document.getElementById('v-ed'),
+      ed = document.getElementById('editor'), bar = document.querySelector('.bar');
+function setView(isSite){
+  site.hidden = !isSite; ed.hidden = isSite; bar.hidden = !isSite;
+  vs.setAttribute('aria-pressed', String(isSite)); ve.setAttribute('aria-pressed', String(!isSite));
+  window.scrollTo(0,0);
+}
+vs.addEventListener('click', () => setView(true));
+ve.addEventListener('click', () => setView(false));
+
+/* countdown */
+const target = new Date('2027-05-15T18:30:00Z').getTime();
+function tick(){
+  const cells = document.querySelectorAll('#countdown b');
+  const diff = Math.max(0, target - Date.now());
+  const d = Math.floor(diff/86400000), h = Math.floor(diff/3600000)%24,
+        m = Math.floor(diff/60000)%60, s = Math.floor(diff/1000)%60;
+  [d,h,m,s].forEach((v,i) => cells[i].textContent = String(v).padStart(2,'0'));
+}
+tick(); setInterval(tick, 1000);
+
+/* RSVP attend toggle */
+document.querySelectorAll('.choice button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.choice button').forEach(x => x.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true');
+}));
+/* editor mockup interactions */
+document.querySelectorAll('.tg').forEach(t => t.addEventListener('click', () =>
+  t.setAttribute('aria-pressed', t.getAttribute('aria-pressed') === 'true' ? 'false' : 'true')));
+document.querySelectorAll('.ed-nav button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.ed-nav button').forEach(x => x.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true');
+}));
+document.querySelectorAll('.tcard').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tcard').forEach(x => x.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true');
+}));
+</script>
+</body>
+</html>

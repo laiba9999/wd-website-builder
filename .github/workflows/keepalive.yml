@@ -1,0 +1,13 @@
+# Supabase pauses a free project after 7 days with no database activity.
+# This pings one cheap endpoint every 3 days so the site never goes cold.
+name: Keep Supabase awake
+on:
+  schedule:
+    - cron: "0 6 */3 * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping keepalive route
+        run: curl -fsS "${{ secrets.SITE_URL }}/api/keepalive"
