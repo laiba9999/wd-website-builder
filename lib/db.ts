@@ -65,6 +65,23 @@ export async function getWeddingBySlug(slug: string): Promise<Wedding | null> {
   return data ? toWedding(data) : null;
 }
 
+/**
+ * Every wedding belonging to a signed-in user, newest first.
+ *
+ * Filtered here in application code rather than by an RLS policy: this query
+ * runs with the service-role key, which bypasses RLS entirely, so the
+ * `.eq("owner_id", …)` *is* the access control. Never call this with an
+ * unverified id — pass only what `currentUser()` returned.
+ */
+export async function getWeddingsByOwner(ownerId: string): Promise<Wedding[]> {
+  const { data } = await db
+    .from("weddings")
+    .select("*")
+    .eq("owner_id", ownerId)
+    .order("created_at", { ascending: false });
+  return (data ?? []).map(toWedding);
+}
+
 /** Public URL for a stored image. The bucket is public, so this is just string maths. */
 export function publicUrl(path: string): string {
   if (!path) return "";

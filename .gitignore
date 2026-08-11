@@ -7,6 +7,9 @@ venv
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
-git
-.github
 .history/
+.env.local
+.env.example
+
+# .github is intentionally NOT ignored — .github/workflows/keepalive.yml has to
+# reach GitHub for the every-3-days ping that stops Supabase pausing the project.

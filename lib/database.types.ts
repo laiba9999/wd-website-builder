@@ -13,6 +13,7 @@ export type Database = {
           id: string;
           slug: string;
           edit_token: string;
+          owner_id: string | null;
           is_published: boolean;
           theme: string;
           primary_color: string;
@@ -25,6 +26,7 @@ export type Database = {
           id?: string;
           slug: string;
           edit_token?: string;
+          owner_id?: string | null;
           is_published?: boolean;
           theme?: string;
           primary_color?: string;

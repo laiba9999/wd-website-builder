@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s --max-time 30 -X POST http://localhost:3001/api/weddings -H 'Content-Type: application/json' -d '{\"coupleNames\":\"Test & Test\",\"weddingDate\":\"2027-06-12\"}' -w '\\\\nstatus=%{http_code}\\\\n')",
+      "Bash(command -v chromium-cli)"
+    ]
+  }
+}

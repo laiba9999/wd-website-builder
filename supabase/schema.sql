@@ -7,6 +7,11 @@ create table if not exists weddings (
   id            uuid primary key default gen_random_uuid(),
   slug          text unique not null,
   edit_token    uuid unique not null default gen_random_uuid(),
+  -- Nullable on purpose. Signing in is optional: a wedding created by a
+  -- signed-out couple has no owner and still works fully via its edit link.
+  -- 'on delete set null' means deleting the auth user orphans the wedding
+  -- rather than destroying it — the edit link keeps working.
+  owner_id      uuid references auth.users(id) on delete set null,
   is_published  boolean not null default false,
   theme         text not null default 'classic',
   primary_color text not null default '#8a6d3b',
@@ -29,6 +34,14 @@ create table if not exists rsvps (
 );
 
 create index if not exists rsvps_by_wedding on rsvps (wedding_id, created_at desc);
+
+-- /dashboard filters on this manually with the service-role key (not via an
+-- RLS policy), so it wants an index once a user owns more than a handful.
+create index if not exists weddings_by_owner on weddings (owner_id);
+
+-- Already ran the original schema before owner_id existed? Run just this:
+--   alter table weddings add column if not exists owner_id uuid
+--     references auth.users(id) on delete set null;
 
 -- Every read and write goes through the Next.js server using the service-role
 -- key, which bypasses RLS. Enabling RLS with no policies therefore changes
