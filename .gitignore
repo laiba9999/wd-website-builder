@@ -10,6 +10,6 @@ next-env.d.ts
 .history/
 .env.local
 .env.example
-
+.claude/settings.json
 # .github is intentionally NOT ignored — .github/workflows/keepalive.yml has to
 # reach GitHub for the every-3-days ping that stops Supabase pausing the project.
