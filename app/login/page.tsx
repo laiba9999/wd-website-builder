@@ -141,7 +141,7 @@ export default function LoginPage() {
             textAlign: "center",
             color: "#8a8580",
             fontSize: ".82rem",
-            marginTop: 22,
+            marginTop: 22, //L
             marginBottom: 0,
           }}
         >
