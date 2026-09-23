@@ -14,7 +14,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ token: string 
 
   const csv = rsvpsToCsv(
     (data ?? []).map((r) => ({
-      id: r.id, guestName: r.guest_name, email: r.email, attending: r.attending,
+      id: r.id, guestName: r.guest_name,
+      guestNames: r.guest_names?.length ? r.guest_names : [r.guest_name],
+      email: r.email, attending: r.attending,
       partySize: r.party_size, dietary: r.dietary, message: r.message, createdAt: r.created_at,
     }))
   );

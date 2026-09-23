@@ -97,12 +97,16 @@ export const CreateWeddingSchema = z.object({
   weddingDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Pick your wedding date"),
 });
 
+const FullNameSchema = z.string().trim().min(3, "Enter the guest's full name").max(120).refine(
+  (name) => name.split(/\s+/).filter(Boolean).length >= 2,
+  "Enter a first and last name",
+);
+
 export const RsvpSchema = z.object({
   weddingId: z.string().uuid(),
-  guestName: z.string().trim().min(1, "Tell us your name").max(120),
+  guestNames: z.array(FullNameSchema).min(1, "Add at least one guest").max(20),
   email: z.string().email("Check that email address").or(z.literal("")),
   attending: z.boolean(),
-  partySize: z.coerce.number().int().min(1).max(20),
   dietary: z.string().max(400).default(""),
   message: z.string().max(1000).default(""),
   // Honeypot. Real people leave this empty; most bots fill everything in.
@@ -132,6 +136,7 @@ export type Wedding = {
 export type Rsvp = {
   id: string;
   guestName: string;
+  guestNames: string[];
   email: string | null;
   attending: boolean;
   partySize: number;

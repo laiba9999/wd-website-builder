@@ -4,6 +4,7 @@ import SectionHead from "./SectionHead";
 
 export default function RsvpForm({ weddingId }: { weddingId: string }) {
   const [attending, setAttending] = useState(true);
+  const [guestNames, setGuestNames] = useState([""]);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
@@ -19,10 +20,9 @@ export default function RsvpForm({ weddingId }: { weddingId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           weddingId,
-          guestName: String(form.get("guestName") ?? ""),
+          guestNames: (attending ? guestNames : guestNames.slice(0, 1)).map((name) => name.trim()),
           email: String(form.get("email") ?? ""),
           attending,
-          partySize: attending ? Number(form.get("partySize") ?? 1) : 1,
           dietary: String(form.get("dietary") ?? ""),
           message: String(form.get("message") ?? ""),
           website: String(form.get("website") ?? ""),
@@ -56,8 +56,37 @@ export default function RsvpForm({ weddingId }: { weddingId: string }) {
         ) : (
           <form className="rsvp" onSubmit={submit}>
             <div className="field">
-              <label htmlFor="guestName">Your name</label>
-              <input id="guestName" name="guestName" required maxLength={120} autoComplete="name" />
+              <label htmlFor="guestName-0">{attending ? "Full name of each guest" : "Your full name"}</label>
+              {guestNames.slice(0, attending ? guestNames.length : 1).map((name, index) => (
+                <div key={index} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                  <input
+                    id={`guestName-${index}`}
+                    value={name}
+                    onChange={(e) => setGuestNames((names) =>
+                      names.map((item, i) => i === index ? e.target.value : item)
+                    )}
+                    required
+                    maxLength={120}
+                    autoComplete={index === 0 ? "name" : "off"}
+                    placeholder={index === 0 ? "First and last name" : `Guest ${index + 1} — first and last name`}
+                  />
+                  {attending && index > 0 && (
+                    <button
+                      type="button"
+                      className="ed-btn"
+                      aria-label={`Remove guest ${index + 1}`}
+                      onClick={() => setGuestNames((names) => names.filter((_, i) => i !== index))}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              {attending && guestNames.length < 20 && (
+                <button type="button" className="ed-btn" onClick={() => setGuestNames((names) => [...names, ""])}>
+                  Add another guest
+                </button>
+              )}
             </div>
 
             <div className="field">
@@ -81,10 +110,6 @@ export default function RsvpForm({ weddingId }: { weddingId: string }) {
 
             {attending && (
               <div className="row">
-                <div className="field">
-                  <label htmlFor="partySize">How many of you</label>
-                  <input id="partySize" name="partySize" type="number" defaultValue={1} min={1} max={20} />
-                </div>
                 <div className="field">
                   <label htmlFor="dietary">Dietary requirements</label>
                   <input id="dietary" name="dietary" maxLength={400} placeholder="No nuts" />

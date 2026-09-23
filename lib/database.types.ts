@@ -43,6 +43,7 @@ export type Database = {
           id: string;
           wedding_id: string;
           guest_name: string;
+          guest_names: string[];
           email: string | null;
           attending: boolean;
           party_size: number;
@@ -54,6 +55,7 @@ export type Database = {
           id?: string;
           wedding_id: string;
           guest_name: string;
+          guest_names?: string[];
           email?: string | null;
           attending: boolean;
           party_size?: number;

@@ -25,6 +25,7 @@ create table if not exists rsvps (
   id          uuid primary key default gen_random_uuid(),
   wedding_id  uuid not null references weddings(id) on delete cascade,
   guest_name  text not null,
+  guest_names text[] not null default '{}'::text[],
   email       text,
   attending   boolean not null,
   party_size  int not null default 1,
@@ -42,6 +43,7 @@ create index if not exists weddings_by_owner on weddings (owner_id);
 -- Already ran the original schema before owner_id existed? Run just this:
 --   alter table weddings add column if not exists owner_id uuid
 --     references auth.users(id) on delete set null;
+-- Existing project? Also run supabase/add-rsvp-guest-names.sql once.
 
 -- Every read and write goes through the Next.js server using the service-role
 -- key, which bypasses RLS. Enabling RLS with no policies therefore changes

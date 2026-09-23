@@ -9,13 +9,14 @@ function cell(value: unknown): string {
 
 export function rsvpsToCsv(rows: Rsvp[]): string {
   const header = [
-    "Timestamp", "Guest Name", "Email", "Attending",
+    "Timestamp", "Primary Guest", "All Guest Names", "Email", "Attending",
     "Number Attending", "Dietary Requirements", "Message",
   ];
   const lines = rows.map((r) =>
     [
       new Date(r.createdAt).toISOString(),
       r.guestName,
+      r.guestNames.join("; "),
       r.email ?? "",
       r.attending ? "Yes" : "No",
       r.attending ? r.partySize : 0,

@@ -49,7 +49,7 @@ export default async function RsvpsPage({ params }: { params: Promise<{ token: s
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: ".85rem" }}>
               <thead>
                 <tr style={{ textAlign: "left", color: "#7a766e", borderBottom: "1px solid #e3e1dc" }}>
-                  {["Received", "Name", "Email", "Attending", "Guests", "Dietary", "Message"].map((h) => (
+                  {["Received", "Guest names", "Email", "Attending", "Guests", "Dietary", "Message"].map((h) => (
                     <th key={h} style={{ padding: "12px 14px", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
                   ))}
                 </tr>
@@ -58,7 +58,9 @@ export default async function RsvpsPage({ params }: { params: Promise<{ token: s
                 {rows.map((r) => (
                   <tr key={r.id} style={{ borderBottom: "1px solid #f0eeea" }}>
                     <td style={cell}>{new Date(r.created_at).toLocaleDateString("en-GB")}</td>
-                    <td style={{ ...cell, fontWeight: 600 }}>{r.guest_name}</td>
+                    <td style={{ ...cell, fontWeight: 600 }}>
+                      {(r.guest_names?.length ? r.guest_names : [r.guest_name]).join(", ")}
+                    </td>
                     <td style={cell}>{r.email ?? "—"}</td>
                     <td style={cell}>{r.attending ? "Yes" : "No"}</td>
                     <td style={cell}>{r.attending ? r.party_size : "—"}</td>

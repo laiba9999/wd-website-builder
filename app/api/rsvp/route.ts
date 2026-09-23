@@ -17,10 +17,11 @@ export async function POST(req: Request) {
 
   const { error } = await db.from("rsvps").insert({
     wedding_id: r.weddingId,
-    guest_name: r.guestName,
+    guest_name: r.guestNames[0],
+    guest_names: r.attending ? r.guestNames : [r.guestNames[0]],
     email: r.email || null,
     attending: r.attending,
-    party_size: r.attending ? r.partySize : 0,
+    party_size: r.attending ? r.guestNames.length : 0,
     dietary: r.dietary || null,
     message: r.message || null,
   });
