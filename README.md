@@ -1,8 +1,8 @@
 # Wedding site builder
 
-Couples fill in a form, pick one of three looks, and get a shareable wedding
-website they can edit forever. No passwords, no paid services. Signing in is
-optional — the secret edit link is the real way in.
+Couples create an invited account, fill in a form, pick one of three looks,
+and get a shareable wedding website. New accounts require the private
+invitation code configured by the site owner.
 
 ## Setting it up
 
@@ -13,21 +13,23 @@ optional — the secret edit link is the real way in.
 3. Storage → New bucket → name it `wedding-media` → tick **Public**.
 4. Project Settings → API → copy the URL, the **service_role** key, and the
    **anon** key.
-5. Authentication → URL Configuration → add `http://localhost:3000/auth/callback`
-   and `https://<your-domain>/auth/callback` to **Redirect URLs**. Magic links
-   silently fail to redirect if you skip this.
+5. Authentication → URL Configuration → add `http://localhost:3000/set-password`
+   and `https://<your-domain>/set-password` to **Redirect URLs**. Invitation
+   links cannot finish account setup if you skip this.
+6. Authentication → Providers → Email → turn off public user sign-ups. The app
+   creates users through the protected server-side invitation endpoint instead.
 
 **2 — Locally**
 
 ```bash
-cp .env.example .env.local   # fill in the four values
+cp .env.example .env.local   # fill in all five values, including INVITE_CODE
 npm install
 npm run dev
 ```
 
 **3 — Vercel** (free, no card)
 
-Push to GitHub, import the repo at vercel.com, and add the same four
+Push to GitHub, import the repo at vercel.com, and add the same five
 environment variables. `NEXT_PUBLIC_SITE_URL` becomes your live domain.
 
 **4 — Keep-alive**
@@ -40,37 +42,34 @@ add a secret named `SITE_URL` set to your Vercel URL. The workflow in
 
 | Route | Who it's for |
 |---|---|
-| `/create` | Couple. Two fields, then hands over the secret edit link. |
+| `/signup` | New couple. Invitation code and email address. |
+| `/set-password` | Invited couple. Finishes account setup from the email link. |
+| `/login` | Existing couple. Email-and-password sign-in. |
+| `/create` | Signed-in couple. Two fields, then hands over the secret edit link. |
 | `/e/<edit-token>` | Couple. The whole editor. The token *is* the password. |
 | `/e/<edit-token>/rsvps` | Couple. Replies, headline counts, CSV download. |
 | `/w/<slug>` | Guests. The public site. |
 | `/w/<slug>?token=…` | Couple. The same page before it's published — this is "preview". |
-| `/login` | Couple. Optional magic-link sign-in. |
-| `/dashboard` | Couple. Their sites, if they signed in. |
+| `/dashboard` | Signed-in couple. Their wedding sites. |
 
 The browser never talks to Supabase **for data**. Every read and write goes
 through a route handler or a server component holding the service-role key,
 which is why there is no row-level-security policy to write.
 
-## The two ways into the editor
+## Accounts and editor links
 
-They're independent, and the first one is the real one:
+New accounts are created only after `/api/auth/invite` validates `INVITE_CODE`
+server-side. Supabase sends the invitation email; its link opens
+`/set-password`, and the couple then signs in with email and password.
 
-1. **The secret edit link** (`/e/<edit-token>`). Always works, no session
-   needed. Holding the URL *is* the authorisation check, verified server-side
-   against the `weddings` table on every request.
-2. **Magic-link sign-in** (optional, additive). Only exists so a couple who
-   loses their edit link can still find their sites. A wedding created while
-   signed in records `owner_id`; `/dashboard` lists those and links straight
-   into the same `/e/<edit-token>` editor. A wedding created signed-out has a
-   null `owner_id` and is in no way lesser.
+Creating a wedding requires a verified session. The wedding records that
+user's `owner_id`, and `/dashboard` lists only weddings owned by that user.
+The API repeats the session check, so bypassing the page cannot create an
+anonymous wedding.
 
-Sign-in never gates anything. If you never configure `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-`/login` and `/dashboard` stop working and the rest of the app doesn't notice.
-
-`middleware.ts` refreshes the session cookie on every request. It guards no
-routes — it's there because Server Components can't write cookies, so without
-it sessions expire at unpredictable moments.
+Existing secret edit links (`/e/<edit-token>`) remain valid for backwards
+compatibility. Holding the unguessable URL is the authorisation check for that
+editor, verified server-side against the `weddings` table on every request.
 
 `lib/schema.ts` is the source of truth for the shape of a wedding. Change it
 there and the types, the validation and the editor defaults all follow.
@@ -90,22 +89,17 @@ Nothing here bills you. Three things would eventually:
 
 ## The one limit that will bite first
 
-**Supabase's built-in email sender is rate-limited to a handful of magic links
+**Supabase's built-in email sender is rate-limited to a handful of invitations
 per hour, shared across the whole project** — not per user. Two or three couples
-signing in at once can exhaust it, and the failure looks like "I never got the
+registering at once can exhaust it, and the failure looks like "I never got the
 email". That's fine at MVP traffic and genuinely not fine at launch traffic.
 
 The fix is to plug a real sender into Authentication → Settings → SMTP
 (Resend and Postmark both have free tiers big enough for this). Nothing in the
 app changes — it's a Supabase dashboard setting. Do it before you tell more
-than a few couples about sign-in.
-
-Worth keeping in proportion: this only ever affects the *optional* sign-in
-path. Edit links have no such limit and no email involved.
+than a few couples about registration.
 
 ## Deliberately not built
 
-Accounts as a requirement, password auth, draft/publish history, RSVP emails,
-image cropping, a Google Sheets sync, and a separate Schedule section (events
-already sort themselves by date). Each of those is a day-three decision, not a
-day-one one.
+Draft/publish history, RSVP emails, image cropping, a Google Sheets sync, and a
+separate Schedule section (events already sort themselves by date).

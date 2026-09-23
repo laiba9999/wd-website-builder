@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +32,11 @@ export default function LoginPage() {
         throw error;
       }
 
-      router.push("/dashboard");
+      const requested = searchParams.get("next");
+      const destination = requested?.startsWith("/") && !requested.startsWith("//")
+        ? requested
+        : "/dashboard";
+      router.push(destination);
       router.refresh();
     } catch (err) {
       setError(
@@ -152,5 +157,13 @@ export default function LoginPage() {
         </p>
       </form>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

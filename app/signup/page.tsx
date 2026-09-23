@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -18,31 +16,18 @@ export default function SignupPage() {
 
     setError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-
     setBusy(true);
 
     try {
-      const supabase = supabaseBrowser();
-
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
+      const response = await fetch("/api/auth/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, inviteCode }),
       });
+      const body = await response.json().catch(() => ({}));
 
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        throw new Error(body.error ?? "Unable to send your invitation.");
       }
 
       setSuccess(true);
@@ -87,13 +72,13 @@ export default function SignupPage() {
           </h1>
 
           <p style={{ lineHeight: 1.7, color: "#7a766e" }}>
-            We've sent a confirmation email to{" "}
+            We&rsquo;ve sent an invitation email to{" "}
             <strong>{email}</strong>.
           </p>
 
           <p style={{ lineHeight: 1.7, color: "#7a766e" }}>
-            Confirm your email address and then you'll be able to access your
-            dashboard.
+            Open the link in that email, choose your password, and then you can
+            create your wedding website.
           </p>
         </div>
       </main>
@@ -137,7 +122,8 @@ export default function SignupPage() {
             lineHeight: 1.7,
           }}
         >
-          Create an account to build and manage your wedding website.
+          This private preview is invitation-only. Enter the access code you
+          were given and we&rsquo;ll email you an account invitation.
         </p>
 
         <div className="ed-field" style={{ marginBottom: 16 }}>
@@ -154,35 +140,17 @@ export default function SignupPage() {
           />
         </div>
 
-        <div className="ed-field" style={{ marginBottom: 16 }}>
-          <label htmlFor="password">Password</label>
-
-          <input
-            id="password"
-            type="password"
-            required
-            minLength={8}
-            autoComplete="new-password"
-            placeholder="At least 8 characters"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
         <div className="ed-field" style={{ marginBottom: 20 }}>
-          <label htmlFor="confirmPassword">
-            Confirm password
-          </label>
+          <label htmlFor="inviteCode">Invitation code</label>
 
           <input
-            id="confirmPassword"
+            id="inviteCode"
             type="password"
             required
-            minLength={8}
-            autoComplete="new-password"
-            placeholder="Enter your password again"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="off"
+            placeholder="Your invitation code"
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
           />
         </div>
 
@@ -195,7 +163,7 @@ export default function SignupPage() {
           }}
           disabled={busy}
         >
-          {busy ? "Creating account…" : "Create account"}
+          {busy ? "Sending invitation…" : "Request invitation"}
         </button>
 
         {error && (

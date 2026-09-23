@@ -54,6 +54,12 @@ export async function currentUser() {
   // creating a wedding.
   if (!authConfigured()) return null;
 
+  const store = await cookies();
+  const hasAuthCookie = store.getAll().some(({ name }) =>
+    name.startsWith("sb-") && name.includes("-auth-token")
+  );
+  if (!hasAuthCookie) return null;
+
   const supabase = await supabaseServer();
   const { data, error } = await supabase.auth.getUser();
   return error ? null : data.user;

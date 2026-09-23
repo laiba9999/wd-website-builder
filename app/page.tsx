@@ -21,7 +21,7 @@ export default function Home() {
           Your names, your events, your menu, your photos. Pick one of three looks,
           share the link, and change anything you like afterwards.
         </p>
-        <Link href="/create" className="ed-btn primary"
+        <Link href="/signup" className="ed-btn primary"
           style={{ display: "inline-block", marginTop: 28, padding: "14px 26px", textDecoration: "none" }}>
           Start your site
         </Link>

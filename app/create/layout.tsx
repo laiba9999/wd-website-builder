@@ -7,10 +7,7 @@ export default async function CreateLayout({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login?next=/create");
 
   return children;
 }
